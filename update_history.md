@@ -31,3 +31,12 @@
     - `audioplayers`: 用於播放專注音樂與結束鬧鈴。
 - **更新多語言系統**：新增音樂與鬧鐘相關的繁體中文、英文與日文翻譯。
 - **專案結構更新**：更新 `PROJECT_STRUCTURE.md` 以反映新增的平台與功能模組。
+
+## [2026-04-03]
+### 新增功能
+- **AI Studio 專用上下文文件**：建立 `focus_flow_full_context.md` 與 `focus_flow_full_context.txt`，彙整專案架構、核心功能與關鍵代碼，方便上傳至 Google AI Studio 進行協作開發。
+
+## [2026-04-04]
+### 建置與釋出
+- **產出 Release APK**：成功執行 `flutter build apk --release`，產生用於在手機上安裝的安裝檔。
+    - **產出路徑**：`build\app\outputs\flutter-apk\app-release.apk`

@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/merged_codebase.md
 
 # Symbolication related
 app.*.symbols

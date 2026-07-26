@@ -20,6 +20,8 @@
 | `test/` | 單元測試或集成測試程式碼。 |
 | `update_history.md` | 專案更新日誌，記錄每次功能開發與 Bug 修復細節。 |
 | `project_structure.md` | 本文件，說明專案架構與目錄用途。 |
+| `focus_flow_full_context.md` | 專案完整內容上下文 (Markdown)，彙整架構與關鍵程式碼。 |
+| `focus_flow_full_context.txt` | 專案完整內容上下文 (TXT)，解決 AI Studio 上傳限制。 |
 
 ---
 
@@ -69,8 +71,10 @@ FocusFlow 具備「封鎖其他 App」的功能，這部分依賴於 Android 原
 ---
 
 ## 其他補充
-- **build/**: 編譯後的檔案存放處碼。
+- **build/**: 編譯後的檔案存放處，包含所有編譯後的產物。
+    - `build/app/outputs/flutter-apk/app-release.apk`: 最新的發佈版 (Release) 安裝檔，可直接安裝至 Android 手機。
 - **.dart_tool/** & **.idea/**: IDE 與 Dart 編譯器產生的快取資料，不需手動修改。
 
 ---
+最後更新時間：2026-04-04 16:04 (由 AI 協助)
 建立日期：2026-03-12
