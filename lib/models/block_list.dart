@@ -8,8 +8,8 @@ class BlockList {
   BlockList({
     required this.id,
     required this.name,
-    this.apps = const [],
-  });
+    List<String>? apps,
+  }) : apps = apps ?? [];
 
   Map<String, dynamic> toMap() {
     return {

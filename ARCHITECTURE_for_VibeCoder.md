@@ -56,8 +56,7 @@ FocusFlow 是一款手機 App（目前以 Android 為主），幫你「3C 戒毒
 | 第三方服務 | 用途 | 免費／付費 | 金鑰或帳密放哪裡 | 如果服務倒了或改價會發生什麼 |
 | :--- | :--- | :--- | :--- | :--- |
 | Flutter／Dart（Google） | App 開發框架，整個 App 靠它建構 | 免費（開源） | 不需要金鑰 | App 無法再編譯更新，但已裝好的 App 不受影響 |
-| pub.dev 套件：provider、shared_preferences、file_picker、audioplayers、google_fonts、flutter_launcher_icons | 狀態管理、本機儲存、選檔案、播音樂、字型、圖示 | 免費（開源） | 不需要金鑰 | 新版編譯可能失敗，可改用替代套件；既有 App 不受影響 |
-| Google Fonts 字型伺服器 | 畫面字型（Inter）的下載來源 | 免費 | 不需要金鑰 | 離線時自動退回系統預設字型，App 仍可正常使用 |
+| pub.dev 套件：provider、shared_preferences、file_picker、audioplayers、flutter_launcher_icons | 狀態管理、本機儲存、選檔案、播音樂、圖示 | 免費（開源） | 不需要金鑰 | 新版編譯可能失敗，可改用替代套件；既有 App 不受影響 |
 | Android 系統（使用量資料、懸浮窗等權限） | 提供監看與攔截 App 的能力 | 免費 | 不需要金鑰 | Android 版本更新若調整權限規則，封鎖功能可能需要改寫 |
 
 註：repo 內**未發現**任何 API 金鑰、伺服器、資料庫服務或付費服務。

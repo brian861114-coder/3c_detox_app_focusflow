@@ -6,7 +6,10 @@ import '../models/schedule.dart';
 class ScheduleProvider with ChangeNotifier {
   List<FocusSchedule> _schedules = [];
 
+  bool _isLoaded = false;
+
   List<FocusSchedule> get schedules => _schedules;
+  bool get isLoaded => _isLoaded;
 
   ScheduleProvider() {
     _loadSchedules();
@@ -16,10 +19,15 @@ class ScheduleProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final String? schedulesJson = prefs.getString('focus_schedules');
     if (schedulesJson != null) {
-      final List<dynamic> decoded = jsonDecode(schedulesJson);
-      _schedules = decoded.map((item) => FocusSchedule.fromJson(item)).toList();
-      notifyListeners();
+      try {
+        final List<dynamic> decoded = jsonDecode(schedulesJson);
+        _schedules = decoded.map((item) => FocusSchedule.fromJson(item)).toList();
+      } catch (e) {
+        debugPrint('Ignoring unreadable schedules: $e');
+      }
     }
+    _isLoaded = true;
+    notifyListeners();
   }
 
   Future<void> _saveSchedules() async {
@@ -93,41 +101,31 @@ class ScheduleProvider with ChangeNotifier {
     }
   }
 
-  bool isCurrentlyInScheduledFocus() {
-    return getCurrentActiveSchedule() != null;
-  }
+  /// Returns the enabled schedule whose window contains [now] (default: current time),
+  /// together with when that window ends, or null.
+  ActiveScheduleWindow? activeWindow([DateTime? now]) {
+    now ??= DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
 
-  /// Returns the currently active schedule if one matches, or null
-  FocusSchedule? getCurrentActiveSchedule() {
-    final now = DateTime.now();
-    final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
-    final prevDay = currentDay == 1 ? 7 : currentDay - 1;
-
-    for (var schedule in _schedules) {
-      // Only check enabled schedules
+    for (final schedule in _schedules) {
       if (!schedule.isEnabled) continue;
-
-      // Check for today's schedule
-      if (schedule.weekdays.contains(currentDay)) {
-        final startToday = DateTime(now.year, now.month, now.day, schedule.startHour, schedule.startMinute);
-        final endToday = startToday.add(Duration(minutes: schedule.durationMinutes));
-
-        if (now.isAfter(startToday) && now.isBefore(endToday)) {
-          return schedule;
-        }
-      }
-
-      // Check for yesterday's schedule (in case it crosses midnight)
-      if (schedule.weekdays.contains(prevDay)) {
-        final yesterday = now.subtract(const Duration(days: 1));
-        final startYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, schedule.startHour, schedule.startMinute);
-        final endYesterday = startYesterday.add(Duration(minutes: schedule.durationMinutes));
-
-        if (now.isAfter(startYesterday) && now.isBefore(endYesterday)) {
-          return schedule;
+      // Check today's occurrence, then yesterday's (in case it crosses midnight)
+      for (final day in [today, DateTime(today.year, today.month, today.day - 1)]) {
+        if (!schedule.weekdays.contains(day.weekday)) continue;
+        final start = DateTime(day.year, day.month, day.day, schedule.startHour, schedule.startMinute);
+        final end = start.add(Duration(minutes: schedule.durationMinutes));
+        if (!now.isBefore(start) && now.isBefore(end)) {
+          return ActiveScheduleWindow(schedule, end);
         }
       }
     }
     return null;
   }
+}
+
+class ActiveScheduleWindow {
+  final FocusSchedule schedule;
+  final DateTime end;
+
+  const ActiveScheduleWindow(this.schedule, this.end);
 }

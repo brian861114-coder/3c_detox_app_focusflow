@@ -282,11 +282,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         
                         GestureDetector(
                           onTap: () {
-                            if (focusProvider.isFocusing && focusProvider.isStrictMode && !focusProvider.isResting) {
+                            if (focusProvider.isFocusing && focusProvider.isSessionStrict && !focusProvider.isResting) {
                               // Cannot give up during strict mode!
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(lang.translate('strict_mode') + '!!!'),
+                                  content: Text('${lang.translate('strict_mode')}!!!'),
                                   duration: const Duration(seconds: 1),
                                 ),
                               );
@@ -303,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 40),
                             decoration: BoxDecoration(
                               gradient: (focusProvider.isFocusing || focusProvider.isResting)
-                                  ? ((focusProvider.isFocusing && focusProvider.isStrictMode) 
+                                  ? ((focusProvider.isFocusing && focusProvider.isSessionStrict) 
                                       ? const LinearGradient(colors: [Color(0xFF6B7280), Color(0xFF374151)]) // Greyed out if strict
                                       : const LinearGradient(colors: [Color(0xFFEF4444), Color(0xFF991B1B)]))
                                   : const LinearGradient(colors: [Color(0xFF10B981), Color(0xFF047857)]),
@@ -311,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               boxShadow: [
                                 BoxShadow(
                                   color: ((focusProvider.isFocusing || focusProvider.isResting) 
-                                      ? ((focusProvider.isFocusing && focusProvider.isStrictMode) ? const Color(0xFF6B7280) : const Color(0xFFEF4444)) 
+                                      ? ((focusProvider.isFocusing && focusProvider.isSessionStrict) ? const Color(0xFF6B7280) : const Color(0xFFEF4444)) 
                                       : const Color(0xFF10B981)).withOpacity(0.4),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
@@ -636,7 +636,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
                 Navigator.pop(context);
               },
-              child: Text(lang.translate('confirm'), style: const TextStyle(color: const Color(0xFF10B981))),
+              child: Text(lang.translate('confirm'), style: const TextStyle(color: Color(0xFF10B981))),
             ),
           ],
         );

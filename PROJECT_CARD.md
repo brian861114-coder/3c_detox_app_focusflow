@@ -26,7 +26,7 @@ card_reviewed: 2026-09-24
 - 依賴：`pubspec.yaml`。安裝檔：`flutter build apk --release`（架構文件）
 
 ## 外部依賴
-- 無後端。可選網路字型；離線退系統字型
+- 無後端、無網路（release 無 INTERNET 權限）；使用系統字型（2026-09-24 移除 google_fonts）
 - 發布簽章設定檔不在 repo；若出現勿讀
 
 ## 禁區

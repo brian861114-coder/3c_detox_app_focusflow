@@ -1,64 +1,47 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class NativeIntegration {
   static const MethodChannel _channel = MethodChannel('focus_flow/native');
 
-  // Request Usage Stats Permission (Android)
-  static Future<void> requestUsageStatsPermission() async {
+  /// Invokes [method], logging instead of throwing when the platform side
+  /// fails or does not exist (non-Android platforms, tests).
+  static Future<T?> _invoke<T>(String method, [Object? arguments]) async {
     try {
-      await _channel.invokeMethod('requestUsageStatsPermission');
+      return await _channel.invokeMethod<T>(method, arguments);
     } on PlatformException catch (e) {
-      print("Failed to request permission: '${e.message}'.");
+      debugPrint("Native call '$method' failed: ${e.message}");
+    } on MissingPluginException {
+      debugPrint("Native call '$method' is not available on this platform.");
     }
+    return null;
   }
+
+  // Request Usage Stats Permission (Android)
+  static Future<void> requestUsageStatsPermission() => _invoke('requestUsageStatsPermission');
 
   // Request Overlay Permission (Android) for jumping back to app
-  static Future<void> requestOverlayPermission() async {
-    try {
-      await _channel.invokeMethod('requestOverlayPermission');
-    } on PlatformException catch (e) {
-      print("Failed to request overlay permission: '${e.message}'.");
-    }
-  }
+  static Future<void> requestOverlayPermission() => _invoke('requestOverlayPermission');
 
   // Request Battery Optimization Ignore Permission (Android)
-  static Future<void> requestBatteryOptimizationPermission() async {
-    try {
-      await _channel.invokeMethod('requestBatteryOptimizationPermission');
-    } on PlatformException catch (e) {
-      print("Failed to request battery permission: '${e.message}'.");
-    }
-  }
+  static Future<void> requestBatteryOptimizationPermission() => _invoke('requestBatteryOptimizationPermission');
 
   // Get installed apps (Android)
   static Future<List<Map<String, String>>> getInstalledApps() async {
-    try {
-      final List<dynamic> apps = await _channel.invokeMethod('getInstalledApps');
-      return apps.map((e) => Map<String, String>.from(e)).toList();
-    } on PlatformException catch (e) {
-      print("Failed to get installed apps: '${e.message}'.");
-      return [];
-    }
+    final apps = await _invoke<List<dynamic>>('getInstalledApps');
+    return apps?.map((e) => Map<String, String>.from(e as Map)).toList() ?? [];
   }
 
-  // Start the persistent service
-  static Future<void> startPersistentService(List<String> blockedApps, int remainingSeconds) async {
-    try {
-      await _channel.invokeMethod('startService', {
-        'blockedApps': blockedApps,
-        'remainingSeconds': remainingSeconds,
-      });
-    } on PlatformException catch (e) {
-      print("Failed to start service: '${e.message}'.");
-    }
+  /// Starts or updates the foreground blocking service.
+  /// While [resting] the service keeps running but blocks nothing.
+  static Future<void> startPersistentService(List<String> blockedApps, int remainingSeconds, {bool resting = false}) {
+    return _invoke('startService', {
+      'blockedApps': blockedApps,
+      'remainingSeconds': remainingSeconds,
+      'resting': resting,
+    });
   }
 
   // Stop the persistent service
-  static Future<void> stopPersistentService() async {
-    try {
-      await _channel.invokeMethod('stopService');
-    } on PlatformException catch (e) {
-      print("Failed to stop service: '${e.message}'.");
-    }
-  }
+  static Future<void> stopPersistentService() => _invoke('stopService');
 }

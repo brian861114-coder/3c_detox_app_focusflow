@@ -196,7 +196,9 @@ class BlockListDbScreen extends StatelessWidget {
                                         }
                                       },
                                     ),
-                                    if (focusProvider.blockLists.length > 1)
+                                    // Deleting is refused mid-session; hide it so the
+                                    // schedule warning never disables schedules for nothing.
+                                    if (focusProvider.blockLists.length > 1 && !focusProvider.isSessionActive)
                                       IconButton(
                                         icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
                                         onPressed: () async {

@@ -19,7 +19,6 @@
 - `shared_preferences`
 - `file_picker`
 - `audioplayers`
-- `google_fonts`
 
 ### 專案狀態
 目前 repo 內已經有實際 App 功能與操作說明，不再只是 Flutter 模板。這是一個明確以 Android 專注管理為目標的產品原型。
@@ -43,7 +42,6 @@
 - `shared_preferences`
 - `file_picker`
 - `audioplayers`
-- `google_fonts`
 
 ### Project status
 This repository already contains a real application direction and operating instructions. It is no longer just a default Flutter scaffold; it is a concrete Android focus-management product prototype.

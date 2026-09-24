@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'screens/home_screen.dart';
 import 'providers/focus_provider.dart';
 import 'providers/language_provider.dart';
@@ -33,39 +32,25 @@ class _FocusFlowAppState extends State<FocusFlowApp> {
   @override
   void initState() {
     super.initState();
-    _scheduleChecker = Timer.periodic(const Duration(seconds: 10), (timer) {
-      if (!mounted) return;
-      final scheduleProv = context.read<ScheduleProvider>();
-      final focusProv = context.read<FocusProvider>();
+    _scheduleChecker = Timer.periodic(const Duration(seconds: 10), (_) => _checkSchedules());
+  }
 
-      final activeSchedule = scheduleProv.getCurrentActiveSchedule();
-      if (activeSchedule != null) {
-        if (!focusProv.isFocusing && !focusProv.isResting) {
-            // Force strict mode for scheduled focus
-            if (!focusProv.isStrictMode) {
-              focusProv.toggleStrictMode(); 
-            }
-            
-            // Calculate remaining seconds for this schedule
-            final now = DateTime.now();
-            final todayStart = DateTime(now.year, now.month, now.day, activeSchedule.startHour, activeSchedule.startMinute);
-            DateTime scheduleStart = todayStart;
-            // If schedule started yesterday (crosses midnight)
-            if (now.isBefore(todayStart)) {
-              scheduleStart = todayStart.subtract(const Duration(days: 1));
-            }
-            final scheduleEnd = scheduleStart.add(Duration(minutes: activeSchedule.durationMinutes));
-            final remainingSeconds = scheduleEnd.difference(now).inSeconds;
+  void _checkSchedules() {
+    if (!mounted) return;
+    final scheduleProv = context.read<ScheduleProvider>();
+    final focusProv = context.read<FocusProvider>();
+    // Wait for stored state, so a restored session is not overwritten.
+    if (!scheduleProv.isLoaded || !focusProv.isLoaded || focusProv.isSessionActive) return;
 
-            if (remainingSeconds > 0) {
-              focusProv.startScheduledFocus(
-                durationSeconds: remainingSeconds,
-                blockListId: activeSchedule.blockListId,
-              );
-            }
-        }
-      }
-    });
+    final window = scheduleProv.activeWindow();
+    if (window == null) return;
+    final remainingSeconds = window.end.difference(DateTime.now()).inSeconds;
+    if (remainingSeconds > 0) {
+      focusProv.startScheduledFocus(
+        durationSeconds: remainingSeconds,
+        blockListId: window.schedule.blockListId,
+      );
+    }
   }
 
   @override
@@ -84,7 +69,8 @@ class _FocusFlowAppState extends State<FocusFlowApp> {
           iconTheme: IconThemeData(color: Color(0xFF334155)),
           titleTextStyle: TextStyle(color: Color(0xFF334155), fontSize: 20, fontWeight: FontWeight.normal),
         ),
-        textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme.apply(bodyColor: const Color(0xFF334155), displayColor: const Color(0xFF334155))),
+        // System font: the app has no INTERNET permission, so runtime font fetching cannot work.
+        textTheme: Theme.of(context).textTheme.apply(bodyColor: const Color(0xFF334155), displayColor: const Color(0xFF334155)),
         colorScheme: const ColorScheme.light(
           primary: Color(0xFFA1C6EA),
           secondary: Color(0xFF10B981),

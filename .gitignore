@@ -45,3 +45,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/key.properties
+
+# Local tool output
+analyze_out*.txt
+build_error.txt
+test_out.txt
